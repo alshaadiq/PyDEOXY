@@ -45,7 +45,7 @@ class ConvergencePlotWidget(QWidget):
                 y=[max_y],
                 mode='markers+text',
                 marker=dict(color="red", size=10),
-                text=[f"Max: {max_y:.2f}"],  # Display max y-value as text
+                text=[f"Max: {max_y:.5f}"],  # Display max y-value as text
                 textposition="top center",
                 name="Maximum Fitness"
             ))

@@ -22,7 +22,7 @@ def mutate(response, mutation_rate=0.1):
             response[i] = random.randint(1, 10)  # Assuming scale is 1-10
     return response
 
-def genetic_algorithm(population, expert_response, num_generations, mutation_rate=0.1, num_selected=5, crossover_rate=0.7, text_output=None, plot_widget=None):
+def genetic_algorithm(population, expert_response, num_generations, mutation_rate=0.1, num_selected=5, crossover_rate=0.7, text_output=None, plot_widget=None, elite_size=1):
     pop_size = len(population)
     best_fitness_over_time = []
 
@@ -30,7 +30,11 @@ def genetic_algorithm(population, expert_response, num_generations, mutation_rat
         fitness_scores = [(response, calculate_fitness(response, expert_response)) for response in population]
         selected_population = selection(population, expert_response, num_selected)
         
-        best_fitness = max(fitness for _, fitness in fitness_scores)
+        # Extract elite individuals
+        elites = sorted(fitness_scores, key=lambda x: x[1], reverse=True)[:elite_size]
+        elite_individuals = [elite[0] for elite in elites]
+        
+        best_fitness = elites[0][1]
         best_fitness_over_time.append(best_fitness)
         
         if text_output:
@@ -39,7 +43,7 @@ def genetic_algorithm(population, expert_response, num_generations, mutation_rat
         if plot_widget:
             plot_widget.update_plot(best_fitness_over_time)
         
-        new_population = []
+        new_population = elite_individuals.copy()  # Start with elite individuals
         while len(new_population) < pop_size:
             parent1, parent2 = random.sample(selected_population, 2)
             if random.random() < crossover_rate:
@@ -54,3 +58,4 @@ def genetic_algorithm(population, expert_response, num_generations, mutation_rat
     
     best_response = max(population, key=lambda x: calculate_fitness(x, expert_response))
     return best_response
+
