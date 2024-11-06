@@ -24,7 +24,7 @@ class ConvergencePlotWidget(QWidget):
         fig.add_trace(go.Scatter(
             y=fitness_data, 
             mode='lines+markers', 
-            line=dict(color="lightblue"),
+            line=dict(color="orange"),
             marker=dict(size=6)
         ))
         
