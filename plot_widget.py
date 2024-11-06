@@ -21,12 +21,34 @@ class ConvergencePlotWidget(QWidget):
     def update_plot(self, fitness_data):
         # Create Plotly figure
         fig = go.Figure()
+
+        # Generate x-values starting from 1
+        x_values = list(range(1, len(fitness_data) + 1))
+
+        # Add main line trace for fitness data
         fig.add_trace(go.Scatter(
+            x=x_values,
             y=fitness_data, 
             mode='lines+markers', 
             line=dict(color="orange"),
-            marker=dict(size=6)
+            marker=dict(size=6),
+            name="Convergence Line"
         ))
+
+        # Highlight the maximum y-value with a special marker
+        if fitness_data:  # Ensure there is data to process
+            max_y = max(fitness_data)
+            max_index = fitness_data.index(max_y)
+            # Add a marker for the maximum point
+            fig.add_trace(go.Scatter(
+                x=[max_index],
+                y=[max_y],
+                mode='markers+text',
+                marker=dict(color="red", size=10),
+                text=[f"Max: {max_y:.2f}"],  # Display max y-value as text
+                textposition="top center",
+                name="Maximum Fitness"
+            ))
         
         # Set figure background and layout colors
         fig.update_layout(
@@ -36,7 +58,7 @@ class ConvergencePlotWidget(QWidget):
             plot_bgcolor="black",
             paper_bgcolor="black",
             font=dict(color="lightblue"),
-            xaxis=dict(showgrid=True, gridcolor="lightblue"),
+            xaxis=dict(showgrid=True, gridcolor="lightblue", range=[1, len(fitness_data)]),
             yaxis=dict(showgrid=True, gridcolor="lightblue")
         )
         
