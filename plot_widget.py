@@ -1,30 +1,55 @@
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.figure import Figure
+from PyQt5.QtWidgets import QWidget, QVBoxLayout
+from PyQt5.QtWebEngineWidgets import QWebEngineView
+import plotly.graph_objects as go
+import plotly.io as pio
+import tempfile
+import os
+from PyQt5.QtCore import QUrl
 
-class ConvergencePlotWidget(FigureCanvas):
+class ConvergencePlotWidget(QWidget):
     def __init__(self, parent=None):
-        fig = Figure(facecolor='black')  # Set the figure background to black
-        self.ax = fig.add_subplot(111)
-        self.ax.set_title("Convergence Graph", color='lightblue')  # Title color
-        self.ax.set_xlabel("Generation", color='lightblue')  # X-axis label color
-        self.ax.set_ylabel("Fitness (Spearman Correlation)", color='lightblue')  # Y-axis label color
-        self.ax.tick_params(axis='x', colors='lightblue')  # X-axis ticks color
-        self.ax.tick_params(axis='y', colors='lightblue')  # Y-axis ticks color
-        self.ax.set_facecolor('black')  # Background color of the plot area
-        super().__init__(fig)
-        self.setParent(parent)
-    
+        super().__init__(parent)
+        # Set up layout
+        layout = QVBoxLayout(self)
+        self.web_view = QWebEngineView()
+        layout.addWidget(self.web_view)
+        self.setLayout(layout)
+        
+        # Initialize empty plot
+        self.update_plot([])
+
     def update_plot(self, fitness_data):
-        self.ax.clear()  # Clear previous plot
-        self.ax.plot(fitness_data, color="lightblue")  # Line color
-        self.ax.set_title("Convergence Graph", color='lightblue')  # Title color
-        self.ax.set_xlabel("Generation", color='lightblue')  # X-axis label color
-        self.ax.set_ylabel("Fitness (Spearman Correlation)", color='lightblue')  # Y-axis label color
-        self.ax.tick_params(axis='x', colors='lightblue')  # X-axis ticks color
-        self.ax.tick_params(axis='y', colors='lightblue')  # Y-axis ticks color
-        self.ax.set_facecolor('black')  # Background color of the plot area
+        # Create Plotly figure
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(
+            y=fitness_data, 
+            mode='lines+markers', 
+            line=dict(color="lightblue"),
+            marker=dict(size=6)
+        ))
         
-        # Add grid
-        self.ax.grid(color='lightblue', linestyle='--', linewidth=0.5)  # Customize grid color and style
+        # Set figure background and layout colors
+        fig.update_layout(
+            title="Convergence Graph",
+            xaxis_title="Generation",
+            yaxis_title="Fitness (Spearman Correlation)",
+            plot_bgcolor="black",
+            paper_bgcolor="black",
+            font=dict(color="lightblue"),
+            xaxis=dict(showgrid=True, gridcolor="lightblue"),
+            yaxis=dict(showgrid=True, gridcolor="lightblue")
+        )
         
-        self.draw()  # Redraw the canvas
+        # Save the plot as an HTML file and load it in the QWebEngineView
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".html") as f:
+            pio.write_html(fig, file=f.name, auto_open=False)
+            temp_file_path = os.path.abspath(f.name)
+            self.web_view.setUrl(QUrl.fromLocalFile(temp_file_path))
+
+            # Optionally, delete the temporary HTML file after loading
+            def cleanup():
+                if os.path.exists(f.name):
+                    os.remove(f.name)
+            
+            # Using loadFinished to ensure that the content has been fully loaded before cleanup
+            self.web_view.page().loadFinished.connect(lambda: cleanup())
