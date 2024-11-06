@@ -51,9 +51,9 @@ class GeneticAlgorithmGUI(QWidget):
         self.num_generations_label = QLabel("Number of Generations:")
         self.num_generations_input = QLineEdit("50")
         self.mutation_rate_label = QLabel("Mutation Rate:")
-        self.mutation_rate_input = QLineEdit("0.1")
+        self.mutation_rate_input = QLineEdit("0.05")
         self.crossover_rate_label = QLabel("Crossover Rate:")
-        self.crossover_rate_input = QLineEdit("0.7")
+        self.crossover_rate_input = QLineEdit("0.95")
         self.num_selected_label = QLabel("Number of Selected Responses:")
         self.num_selected_input = QLineEdit("5")
 
