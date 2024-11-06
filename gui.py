@@ -119,7 +119,7 @@ class GeneticAlgorithmGUI(QWidget):
         # Create a QLabel for the copyright watermark
         self.copyright_label = QLabel("© Muhammad Fajar Prasetyo and Muhammad Usman Alshaadiq")
         self.copyright_label.setAlignment(Qt.AlignRight | Qt.AlignBottom)  # Align to bottom right
-        self.copyright_label.setStyleSheet("color: lightblue; font-size: 8px;")  # Smaller font size
+        self.copyright_label.setStyleSheet("color: lightblue; font-size: 10px;")  # Smaller font size
 
         # Add the copyright label below the convergence plot
         right_layout.addWidget(self.copyright_label, alignment=Qt.AlignBottom | Qt.AlignRight)
